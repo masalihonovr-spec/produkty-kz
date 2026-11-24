@@ -91,6 +91,22 @@ footer{text-align:center;padding:24px;color:var(--muted);font-size:14px}
   <button class="ghost" onclick="$('sentM').classList.remove('on')">Закрыть</button>
 </div></div>
 
+<button id="adminBtn" class="gold" hidden style="position:fixed;right:14px;bottom:14px;z-index:20" onclick="openAdmin()">⚙ Редактор</button>
+<div class="modal" id="adminM"><div class="box">
+  <h3 style="margin:0">Редактор товаров</h3>
+  <div class="hint">Меняйте товары, затем нажмите «Опубликовать на сайте».</div>
+  <div id="adminGoods" style="display:flex;flex-direction:column;gap:10px"></div>
+  <b>Новый товар</b>
+  <input id="nName" placeholder="Название"><input id="nDesc" placeholder="Описание"><input id="nPrice" type="number" placeholder="Цена, ₽">
+  <button onclick="addGood()">Добавить товар</button>
+  <b>Доступ к GitHub (хранится только на этом устройстве)</b>
+  <input id="repo" placeholder="логин/репозиторий, например ivan/produkty-kz">
+  <input id="tok" type="password" placeholder="Токен GitHub">
+  <button id="pubGo" class="gold" onclick="publish()">✔ Опубликовать на сайте</button>
+  <div id="pubMsg" class="hint"></div>
+  <button class="ghost" onclick="closeM()">Закрыть</button>
+</div></div>
+
 <script id="state" type="application/json">{"goods":[
 {"id":1,"name":"Курт (сушёный сыр)","desc":"Солёные шарики из кисломолочного сыра, 200 г","price":450,"emoji":"🧀","color":"#fde8b0"},
 {"id":2,"name":"Чак-чак","desc":"Десерт из теста и мёда, 300 г","price":550,"emoji":"🍯","color":"#fbd38d"},
@@ -144,6 +160,63 @@ function order(via){
   try{window.open(via==='wa'?'https://wa.me/79006071202?text='+encodeURIComponent(text):url,'_blank')}catch{}
   try{navigator.clipboard.writeText(text).catch(()=>{})}catch{}
   cart={};saveCart();renderCart();
+}
+
+// ---- Режим владельца: откройте сайт с #admin в конце адреса ----
+const LS=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k)||'';localStorage.setItem(k,v)}catch{return ''}};
+const guessRepo=()=>{const m=location.hostname.match(/^(.+)\.github\.io$/),p=location.pathname.split('/')[1];return m&&p?m[1]+'/'+p:''};
+function checkAdmin(){$('adminBtn').hidden=location.hash!=='#admin'}
+window.addEventListener('hashchange',checkAdmin);checkAdmin();
+const touch=()=>{$('pubGo').textContent='✔ Опубликовать на сайте *';$('pubMsg').textContent=''};
+function openAdmin(){$('repo').value=LS('pk_repo')||guessRepo();$('tok').value=LS('pk_tok');adminList();$('adminM').classList.add('on')}
+const closeM=()=>$('adminM').classList.remove('on');
+function adminList(){
+  $('adminGoods').innerHTML=goods.map(g=>`<div class="arow">${pic(g,'t')}
+  <div style="flex:1;display:flex;flex-direction:column;gap:4px"><input value="${esc(g.name)}" onchange="edit(${g.id},'name',this.value)"><input value="${esc(g.desc||'')}" placeholder="Описание" onchange="edit(${g.id},'desc',this.value)"></div>
+  <input type="number" value="${g.price}" style="max-width:84px" onchange="edit(${g.id},'price',+this.value)">
+  <label class="up">📷 Фото<input type="file" accept="image/*" hidden onchange="upPhoto(${g.id},this.files[0])"></label>
+  <button class="red" onclick="del(${g.id})">✕</button></div>`).join('');
+}
+function edit(id,f,v){const g=goods.find(x=>x.id===id);if(g){g[f]=v;touch();renderGoods()}}
+function del(id){if(!confirm('Удалить товар?'))return;goods=goods.filter(x=>x.id!==id);touch();renderGoods();adminList()}
+function addGood(){
+  const name=$('nName').value.trim(),price=+$('nPrice').value;
+  if(!name||!(price>0))return alert('Укажите название и цену');
+  goods.push({id:Date.now(),name,desc:$('nDesc').value.trim(),price,emoji:'🛍',color:'#e8eef3'});
+  ['nName','nDesc','nPrice'].forEach(i=>$(i).value='');touch();renderGoods();adminList();
+}
+function upPhoto(id,file){
+  if(!file)return;const r=new FileReader();
+  r.onload=()=>{const im=new Image();im.onload=()=>{
+    const k=Math.min(1,640/Math.max(im.width,im.height)),c=document.createElement('canvas');
+    c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    const g=goods.find(x=>x.id===id);if(g){g.img=c.toDataURL('image/jpeg',.78);touch();renderGoods();adminList()}};im.src=r.result};
+  r.readAsDataURL(file);
+}
+async function publish(){
+  const repo=$('repo').value.trim(),tok=$('tok').value.trim(),msg=$('pubMsg');
+  if(!repo||!tok)return msg.textContent='Укажите репозиторий и токен';
+  LS('pk_repo',repo);LS('pk_tok',tok);msg.textContent='Публикуем…';
+  const api='https://api.github.com/repos/'+repo+'/contents/index.html';
+  const H={Authorization:'Bearer '+tok,'X-GitHub-Api-Version':'2022-11-28'};
+  try{
+    const meta=await fetch(api,{headers:{...H,Accept:'application/vnd.github+json'}});
+    if(!meta.ok)throw new Error(meta.status===401||meta.status===403?'токен не подходит или у него нет прав':meta.status===404?'репозиторий или файл index.html не найден':'код '+meta.status);
+    const sha=(await meta.json()).sha;
+    const raw=await fetch(api,{headers:{...H,Accept:'application/vnd.github.raw+json'}});
+    if(!raw.ok)throw new Error('не удалось прочитать файл, код '+raw.status);
+    let html=await raw.text();
+    const json=JSON.stringify({goods}).replace(/</g,'\\u003c');
+    const re=/(<script id="state" type="application\/json">)[\s\S]*?(<\/script>)/;
+    if(!re.test(html))throw new Error('в файле не найден блок товаров');
+    html=html.replace(re,(m,a,b)=>a+json+b);
+    const bytes=new TextEncoder().encode(html);let bin='';
+    for(let i=0;i<bytes.length;i+=8192)bin+=String.fromCharCode.apply(null,bytes.subarray(i,i+8192));
+    const put=await fetch(api,{method:'PUT',headers:{...H,Accept:'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify({message:'Обновление товаров',content:btoa(bin),sha})});
+    if(!put.ok)throw new Error('не удалось сохранить, код '+put.status);
+    $('pubGo').textContent='✔ Опубликовать на сайте';
+    msg.textContent='Готово ✅ Сайт обновится через 1–2 минуты.';
+  }catch(e){msg.textContent='Ошибка: '+(e.message||e)}
 }
 
 renderGoods();
