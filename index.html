@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="description" content="Produkty iz Kazaxstana: курт, чак-чак, казы, конфеты и другие продукты из Казахстана. Доставка по Рязани.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Produkty iz Kazaxstana</title>
+<style>
+:root{color-scheme:light;--blue:#0b6e99;--gold:#f2b705;--ink:#17212b;--bg:#faf7f2;--muted:#6b7580;--red:#d9363e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink)}
+button{border:0;border-radius:12px;padding:10px 16px;background:var(--blue);color:#fff;font-size:15px;font-weight:600;cursor:pointer}
+button.gold{background:var(--gold);color:#241a00}button.ghost{background:#eef1f4;color:var(--ink)}button.red{background:var(--red)}
+input{padding:11px 12px;border:1px solid #d9dee3;border-radius:12px;font-size:15px;width:100%;font-family:inherit;background:#fff;color:var(--ink)}
+[hidden]{display:none!important}
+.bad{border-color:#d9363e!important;background:#fff0f0!important}
+#phoneErr{background:#fdecec;color:#b3202a;border:1px solid #f3b4b8;border-radius:12px;padding:10px 12px;font-size:14px;font-weight:600}
+header{position:sticky;top:0;z-index:10;background:#fffffff2;border-bottom:1px solid #0001}
+.bar{max-width:1100px;margin:auto;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px}.logo i{font-style:normal;background:var(--gold);border-radius:10px;padding:4px 8px}
+.nav{display:flex;gap:8px;flex-wrap:wrap}.hint{font-size:13px;color:var(--muted)}
+.hero{background:linear-gradient(135deg,#0b6e99,#14a3c7 60%,#f2b705 140%);color:#fff;padding:52px 16px;text-align:center}
+.hero h2{font-size:clamp(28px,6vw,46px);margin:0 0 10px}.hero p{margin:0 auto 20px;max-width:560px;font-size:18px}
+main{max-width:1100px;margin:auto;padding:26px 16px 50px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px}
+.card{background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 4px 18px #0001;display:flex;flex-direction:column}
+.pic{aspect-ratio:4/3;width:100%;object-fit:cover;display:block}.ph{aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;font-size:64px}
+.info{padding:14px;display:flex;flex-direction:column;gap:6px;flex:1}.info small{color:var(--muted);flex:1}
+.buy{display:flex;justify-content:space-between;align-items:center;margin-top:8px}.price{font-size:20px;font-weight:800}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:12px;z-index:30}.modal.on{display:flex}
+.box{background:#fff;border-radius:20px;padding:20px;width:100%;max-width:640px;max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(420px,100%);background:#fff;z-index:40;transform:translateX(100%);transition:.25s;display:flex;flex-direction:column;box-shadow:-8px 0 30px #0003;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.drawer.on{transform:none}.dh,.df{padding:16px;display:flex;flex-direction:column;gap:10px}.dh{flex-direction:row;justify-content:space-between;align-items:center;border-bottom:1px solid #0001}
+.dl{flex:1;overflow:auto;padding:8px 16px}.item{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #0001}
+.t{width:52px;height:52px;border-radius:12px;object-fit:cover;flex:none;display:flex;align-items:center;justify-content:center;font-size:26px}
+.n{flex:1;font-size:14px}.qty{display:flex;align-items:center;gap:6px}.qty button{padding:4px 10px}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between}.total{font-size:20px;font-weight:800}
+.mask{position:fixed;inset:0;background:#0006;z-index:35;display:none}.mask.on{display:block}
+.arow{display:flex;gap:8px;align-items:center}.up{cursor:pointer;background:#eef1f4;border-radius:10px;padding:8px 10px;font-size:13px;white-space:nowrap}
+footer{text-align:center;padding:24px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <div class="logo"><i>KZ</i> Produkty iz Kazaxstana</div>
+  <div class="nav">
+    <button onclick="openCart()">🛒 Корзина · <span id="cnt">0</span></button>
+  </div>
+</div></header>
+<section class="hero"><h2>Вкус степи — с доставкой по Рязани</h2>
+<p>Настоящие продукты из Казахстана. Оформите заказ — он сразу появится в нашем Telegram-чате.</p>
+<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+<a href="tel:+79006071202" onclick="return callNow()" style="background:#fff;color:#0b6e99;border-radius:12px;padding:12px 18px;font-weight:700;text-decoration:none">📞 Позвонить</a>
+<a href="https://wa.me/79006071202" target="_blank" rel="noopener" style="background:#25d366;color:#fff;border-radius:12px;padding:12px 18px;font-weight:700;text-decoration:none">💬 WhatsApp</a>
+</div></section>
+<main><div id="goods" class="grid"></div></main>
+<footer>© Produkty iz Kazaxstana · <a href="tel:+79006071202" onclick="return callNow()" style="color:inherit">+7 900 607-12-02</a></footer>
+
+<div class="mask" id="mask" onclick="closeCart()"></div>
+<aside class="drawer" id="cartD">
+  <div class="dh"><b style="font-size:20px">Ваша корзина</b><button class="ghost" onclick="closeCart()">✕</button></div>
+  <div class="dl" id="cartList"></div>
+  <div class="df">
+    <input id="phone" type="tel" placeholder="Ваш телефон: +7 900 123-45-67" oninput="hidePhoneErr()">
+    <div id="phoneErr" hidden>⚠️ Введите номер телефона</div>
+    <input id="addr" placeholder="Адрес доставки в Рязани (по желанию)">
+    <div class="row"><span>Итого:</span><span class="total" id="total"></span></div>
+    <button class="gold" onclick="order('tg')">Заказать в Telegram</button>
+    <button onclick="order('wa')" style="background:#25d366">Заказать в WhatsApp</button>
+    <a href="tel:+79006071202" onclick="return callNow()" style="display:block;text-align:center;background:#eef1f4;color:#17212b;border-radius:12px;padding:12px;font-weight:700;text-decoration:none">📞 Позвонить: +7 900 607-12-02</a>
+  </div>
+</aside>
+
+<div class="modal" id="callM"><div class="box" style="max-width:380px;text-align:center">
+  <h3 style="margin:0">📞 Позвоните нам</h3>
+  <div id="callNum" style="font-size:28px;font-weight:800;user-select:all">+7 900 607-12-02</div>
+  <a href="tel:+79006071202" style="display:block;background:#0b6e99;color:#fff;border-radius:12px;padding:14px;font-weight:700;text-decoration:none">Набрать номер</a>
+  <button class="ghost" onclick="try{navigator.clipboard.writeText('+79006071202')}catch{};this.textContent='Номер скопирован ✓'">Скопировать номер</button>
+  <div class="hint">Если кнопка не сработала, скопируйте номер и наберите его в телефоне.</div>
+  <button class="ghost" onclick="$('callM').classList.remove('on')">Закрыть</button>
+</div></div>
+
+<div class="modal" id="sentM"><div class="box">
+  <h3 style="margin:0">Заказ готов ✅</h3>
+  <div class="hint">Нажмите зелёную кнопку: откроется Telegram с готовым заказом. Останется нажать «Отправить». Если текст не появился, скопируйте его кнопкой ниже и вставьте в чат вручную.</div>
+  <a id="tgLink" target="_blank" rel="noopener" style="display:block;text-align:center;background:#1fa855;color:#fff;border-radius:12px;padding:14px;font-weight:700;text-decoration:none">Открыть чат в Telegram</a>
+  <a id="waLink" target="_blank" rel="noopener" style="display:block;text-align:center;background:#25d366;color:#fff;border-radius:12px;padding:14px;font-weight:700;text-decoration:none">Отправить заказ в WhatsApp</a>
+  <a href="tel:+79006071202" onclick="return callNow()" style="display:block;text-align:center;background:#eef1f4;color:#17212b;border-radius:12px;padding:14px;font-weight:700;text-decoration:none">📞 Позвонить: +7 900 607-12-02</a>
+  <textarea id="orderText" readonly rows="7" style="width:100%;border:1px solid #d9dee3;border-radius:12px;padding:10px;font:inherit"></textarea>
+  <button onclick="var t=$('orderText');t.select();try{navigator.clipboard.writeText(t.value)}catch{};try{document.execCommand('copy')}catch{};this.textContent='Скопировано ✓'">Скопировать заказ</button>
+  <button class="ghost" onclick="$('sentM').classList.remove('on')">Закрыть</button>
+</div></div>
+
+<script id="state" type="application/json">{"goods":[
+{"id":1,"name":"Курт (сушёный сыр)","desc":"Солёные шарики из кисломолочного сыра, 200 г","price":450,"emoji":"🧀","color":"#fde8b0"},
+{"id":2,"name":"Чак-чак","desc":"Десерт из теста и мёда, 300 г","price":550,"emoji":"🍯","color":"#fbd38d"},
+{"id":3,"name":"Казы","desc":"Традиционная колбаса из конины, 500 г","price":1900,"emoji":"🥩","color":"#f6b8b0"},
+{"id":4,"name":"Конфеты «Рахат»","desc":"Казахстанские шоколадные конфеты, 500 г","price":700,"emoji":"🍫","color":"#d9c2b0"},
+{"id":5,"name":"Казахстанский мёд","desc":"Степной мёд, 500 г","price":800,"emoji":"🐝","color":"#ffe08a"},
+{"id":6,"name":"Чай с чабрецом","desc":"Травяной чай, 100 г","price":350,"emoji":"🍵","color":"#cfe8c8"}
+]}</script>
+<script>
+const TG_USER='werilon';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>n.toLocaleString('ru-RU')+' ₽';
+let goods=JSON.parse($('state').textContent).goods, cart={};
+try{cart=JSON.parse(localStorage.getItem('pk_cart'))||{}}catch{}
+const saveCart=()=>{try{localStorage.setItem('pk_cart',JSON.stringify(cart))}catch{}};
+const pic=(g,c)=>g.img?`<img class="${c}" src="${g.img}" alt="">`:`<div class="${c==='pic'?'ph':c}" style="background:${esc(g.color||'#e8eef3')}">${esc(g.emoji||'🛍')}</div>`;
+
+function renderGoods(){
+  $('goods').innerHTML=goods.map(g=>`<div class="card">${pic(g,'pic')}<div class="info"><b>${esc(g.name)}</b><small>${esc(g.desc||'')}</small>
+  <div class="buy"><span class="price">${fmt(g.price)}</span><button onclick="add(${g.id})">В корзину</button></div></div></div>`).join('');
+  renderCart();
+}
+const add=id=>{cart[id]=(cart[id]||0)+1;saveCart();renderCart()};
+const chg=(id,d)=>{cart[id]=(cart[id]||0)+d;if(cart[id]<=0)delete cart[id];saveCart();renderCart()};
+const items=()=>Object.entries(cart).map(([id,q])=>({g:goods.find(x=>x.id==id),q})).filter(x=>x.g);
+function renderCart(){
+  const it=items();
+  $('cnt').textContent=it.reduce((s,x)=>s+x.q,0);
+  $('cartList').innerHTML=it.length?it.map(({g,q})=>`<div class="item">${pic(g,'t')}<div class="n"><b>${esc(g.name)}</b><br><span class="hint">${fmt(g.price)}</span></div>
+  <div class="qty"><button class="ghost" onclick="chg(${g.id},-1)">−</button>${q}<button class="ghost" onclick="chg(${g.id},1)">+</button></div></div>`).join(''):'<p class="hint">Корзина пуста</p>';
+  $('total').textContent=fmt(it.reduce((s,x)=>s+x.g.price*x.q,0));
+}
+const openCart=()=>{renderCart();$('cartD').classList.add('on');$('mask').classList.add('on')};
+const closeCart=()=>{$('cartD').classList.remove('on');$('mask').classList.remove('on')};
+
+function normPhone(raw){let d=raw.replace(/\D/g,'');if(d.length===11&&(d[0]==='8'||d[0]==='7'))d=d.slice(1);else if(d.length!==10)return null;return d[0]==='9'?'+7'+d:null}
+function showPhoneErr(m){const e=$('phoneErr');e.textContent=m;e.hidden=false;$('phone').classList.add('bad');$('phone').focus()}
+function hidePhoneErr(){$('phoneErr').hidden=true;$('phone').classList.remove('bad')}
+function callNow(){$('callM').classList.add('on');return false}
+function order(via){
+  const it=items();if(!it.length)return alert('Корзина пуста');
+  const p=normPhone($('phone').value);
+  if(!p){showPhoneErr($('phone').value.trim()?'⚠️ Неверный номер. Введите российский мобильный, например +7 900 123-45-67':'⚠️ Введите номер телефона, чтобы оформить заказ');return}
+  hidePhoneErr();
+  const total=it.reduce((s,x)=>s+x.g.price*x.q,0),a=$('addr').value.trim();
+  const text='Новый заказ (Produkty iz Kazaxstana)\n'+it.map(({g,q},i)=>`${i+1}. ${g.name} × ${q} = ${fmt(g.price*q)}`).join('\n')+`\nИтого: ${fmt(total)}\nТелефон: ${p}`+(a?`\nАдрес: ${a}`:'');
+  const url=`https://t.me/${TG_USER}?text=${encodeURIComponent(text)}`;
+  $('orderText').value=text;$('tgLink').href=url;$('waLink').href='https://wa.me/79006071202?text='+encodeURIComponent(text);
+  closeCart();$('sentM').classList.add('on');
+  try{window.open(via==='wa'?'https://wa.me/79006071202?text='+encodeURIComponent(text):url,'_blank')}catch{}
+  try{navigator.clipboard.writeText(text).catch(()=>{})}catch{}
+  cart={};saveCart();renderCart();
+}
+
+renderGoods();
+
+</script>
+</body>
+</html>
